@@ -1,0 +1,211 @@
+#!/usr/bin/env python
+# -*- coding: cp1252 -*-
+'''
+    Pymodbus Synchronous Client Examples
+    --------------------------------------------------------------------------
+    
+    The following is an example of how to use the synchronous modbus client
+    implementation from pymodbus.
+    
+    It should be noted that the client can also be used with
+    the guard construct that is available in python 2.5 and up::
+    
+    with ModbusClient('127.0.0.1') as client:
+    result = client.read_coils(1,10)
+    print result
+    '''
+#---------------------------------------------------------------------------#
+# import the various server implementations
+#---------------------------------------------------------------------------#
+
+
+from pymodbus.client.sync import ModbusTcpClient as ModbusClient
+
+#from pymodbus.client.sync import ModbusUdpClient as ModbusClient
+#from pymodbus.client.sync import ModbusSerialClient as ModbusClient
+
+#---------------------------------------------------------------------------#
+# configure the client logging
+#---------------------------------------------------------------------------#
+
+
+import logging
+logging.basicConfig()
+log = logging.getLogger()
+log.setLevel(logging.INFO)
+
+
+#---------------------------------------------------------------------------#
+# choose the client you want
+#---------------------------------------------------------------------------#
+# make sure to start an implementation to hit against. For this
+# you can use an existing device, the reference implementation in the tools
+# directory, or start a pymodbus server.
+#
+# If you use the UDP or TCP clients, you can override the framer being used
+# to use a custom implementation (say RTU over TCP). By default they use the
+# socket framer::
+#
+#    client = ModbusClient('localhost', port=5020, framer=ModbusRtuFramer)
+#
+# It should be noted that you can supply an ipv4 or an ipv6 host address for
+# both the UDP and TCP clients.
+#
+# There are also other options that can be set on the client that controls
+# how transactions are performed. The current ones are:
+#
+# * retries - Specify how many retries to allow per transaction (default = 3)
+# * retry_on_empty - Is an empty response a retry (default = False)
+# * source_address - Specifies the TCP source address to bind to
+#
+# Here is an example of using these options::
+#
+#    client = ModbusClient('localhost', retries=3, retry_on_empty=True)
+#---------------------------------------------------------------------------#
+
+client = ModbusClient('127.0.0.1', port=502)
+
+#client = ModbusClient(method='ascii', port='/dev/pts/2', timeout=1)
+#client = ModbusClient(method='rtu', port='/dev/pts/2', timeout=1)
+
+client.connect()
+
+#---------------------------------------------------------------------------#
+# specify slave to query
+#---------------------------------------------------------------------------#
+# The slave to query is specified in an optional parameter for each
+# individual request. This can be done by specifying the `unit` parameter
+# which defaults to `0x00`
+#---------------------------------------------------------------------------#
+
+#--== TEST CASE 1 ----------------------------------------------------------#
+print ("")
+print "TESTCASE 1 ---------------TESTCASE 1------------------TESTCASE 1-----"
+print ""
+print "READ 4 Output coils starting at coil # 1.  Enter birth month SEP"
+print ""
+t1= client.read_coils(0, 4,unit=9)
+print " Values of the 4 coils read:"
+print t1.bits
+print "**END OF TESTCASE 1**   **END OF TESTCASE 1**   **END OF TESTCASE 1**"
+print ""
+#--== **  TEST CASE 1  ** --------------------------------------------------#
+
+#--== TEST CASE 2 ----------------------------------------------------------#
+print ""
+print "TESTCASE 2 ---------------TESTCASE 2------------------TESTCASE 2-----"
+print " Encode any number"
+t2= client.read_coils(16,8,unit= 9)
+print t2.bits
+print "**END OF TESTCASE 2**   **END OF TESTCASE 2**   **END OF TESTCASE 2**"
+print ""
+#--== TEST CASE 2 ----------------------------------------------------------#
+
+#--== TEST CASE 3 ----------------------------------------------------------#
+print ""
+print "TESTCASE 3 ---------------TESTCASE 3------------------TESTCASE 3-----"
+print " Encode 12 bit binary number"
+t3= client.read_coils(33,12,unit= 9)
+print t3.bits
+print "**END OF TESTCASE 3**   **END OF TESTCASE 3**   **END OF TESTCASE 3**"
+print ""
+#--== TEST CASE 3 ----------------------------------------------------------#
+
+
+#--== TEST CASE 4 ----------------------------------------------------------#
+print ""
+print "TESTCASE 4 ---------------TESTCASE 4------------------TESTCASE 4-----"
+print " Encode birthday for highest month"
+t4=client.read_discrete_inputs(0,4, unit=9)
+print t4.bits
+print "**END OF TESTCASE 4**   **END OF TESTCASE 4**   **END OF TESTCASE 4**"
+print ""
+#--== TEST CASE 4 ----------------------------------------------------------#
+
+
+#--== TEST CASE 5 ----------------------------------------------------------#
+print ""
+print "TESTCASE 5 ---------------TESTCASE 5------------------TESTCASE 5-----"
+print " Encode any number"
+t5=client.read_discrete_inputs(16,8, unit=9)
+print t5.bits
+print "**END OF TESTCASE 5**   **END OF TESTCASE 5**   **END OF TESTCASE 5**"
+print ""
+#--== TEST CASE 5 ----------------------------------------------------------#
+
+
+#--== TEST CASE 6 ----------------------------------------------------------#
+print ""
+print "TESTCASE 6 ---------------TESTCASE 6------------------TESTCASE 6-----"
+print " Encode 12bit binary number"
+t6=client.read_discrete_inputs(32,12, unit=9)
+print t6.bits
+print "**END OF TESTCASE 6**   **END OF TESTCASE 6**   **END OF TESTCASE 6**"
+print ""
+#--== TEST CASE 6 ----------------------------------------------------------#
+
+
+#--== TEST CASE 7 ----------------------------------------------------------#
+print ""
+print "TESTCASE 7 ---------------TESTCASE 7------------------TESTCASE 7-----"
+print " Encode your birthdate +1000"
+t7=client.read_holding_registers(0,1, unit=9)
+print t7.registers
+print "**END OF TESTCASE 7**   **END OF TESTCASE 7**   **END OF TESTCASE 7**"
+print ""
+#--== TEST CASE 7 ----------------------------------------------------------#
+
+
+
+#--== TEST CASE 8 ----------------------------------------------------------#
+print ""
+print "TESTCASE 8 ---------------TESTCASE 8------------------TESTCASE 8-----"
+print " Encode your birthday +100 and +2000"
+t8=client.read_holding_registers(10,2, unit=9)
+print t8.registers
+print "**END OF TESTCASE 8**   **END OF TESTCASE 8**   **END OF TESTCASE 8**"
+print ""
+#--== TEST CASE 8 ----------------------------------------------------------#
+
+
+#--== TEST CASE 9 ----------------------------------------------------------#
+print ""
+print "TESTCASE 9 ---------------TESTCASE 9------------------TESTCASE 9-----"
+print " Encode birhtdate +1000"
+t9=client.read_input_registers(0,1,unit=9)
+print t9.registers
+print "**END OF TESTCASE 9**   **END OF TESTCASE 9**   **END OF TESTCASE 9**"
+print ""
+#--== TEST CASE 9 ----------------------------------------------------------#
+
+#--== TEST CASE 10 ----------------------------------------------------------#
+print ""
+print "TESTCASE 10 ---------------TESTCASE 10------------------TESTCASE 10-----"
+print " encode birthdate multiplied by 10,20,30"
+t10=client.read_input_registers(10,3,unit=9)
+print t10.registers
+print "**END OF TESTCASE 10** **END OF TESTCASE 10** **END OF TESTCASE 10**"
+print ""
+#--== TEST CASE 10 ----------------------------------------------------------#
+
+#--== TEST CASE 11 ----------------------------------------------------------#
+print ""
+print "TESTCASE 11 ---------------TESTCASE 11------------------TESTCASE 11-----"
+print " Encode either a 1 or a 0"
+t11=client.write_coils(48,[True], unit =9)
+t18= client.read_coils(48,1,unit= 9)
+print t18.bits
+print "**END OF TESTCASE 11**   **END OF TESTCASE 11**   **END OF TESTCASE 11**"
+print ""
+#--== TEST CASE 11 ----------------------------------------------------------#
+
+#--== TEST CASE 12 ----------------------------------------------------------#
+print ""
+print "TESTCASE 12 ---------------TESTCASE 12------------------TESTCASE 12-----"
+print " Encode any 4 digit binary number"
+t12=client.write_coils(64,[True,True, False, True], unit =9)
+t19= client.read_coils(64,4,unit= 2)
+print t19.bits 
+print "**END OF TESTCASE 12**   **END OF TESTCASE 12**   **END OF TESTCASE 12**"
+print ""
+#--== TEST CASE 12 ----------------------------------------------------------#
